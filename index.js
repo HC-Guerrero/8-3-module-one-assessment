@@ -51,7 +51,7 @@ function getHighestMetascore(movies) {
 highestMetaScore = 0;
 for(i = 0; i < movies.length; i++) {
   if (typeof movies[i].metascore === "string") {
-    parseFloat(movies[i].metascore);
+    Number(movies[i].metascore);
   if(highestMetaScore < movies[i].metascore) {
     highestMetaScore = movies[i].metascore
    
@@ -60,7 +60,7 @@ for(i = 0; i < movies.length; i++) {
   }
 }
 }
-return parseFloat(highestMetaScore);
+return Number(highestMetaScore);
 }
 
 /**
@@ -75,26 +75,29 @@ return parseFloat(highestMetaScore);
  *  //> 7.76
  */
 function getAverageIMDBRating(movies) {
+  if (movies.length === 0) {
+    return 0;
+  }
   sum = 0;
+  avg = 0;
   for ( i = 0;  i < movies.length; i++) {
-    if(movies[i].imdbRating.charAt(0) === '"' && movies[i].imdbRating.charAt(movies[i].imdbRating.length-1) === '"'){
+    /*if(movies[i].imdbRating.charAt(0) === '"' && movies[i].imdbRating.charAt(movies[i].imdbRating.length-1) === '"'){
       movies[i].imdbRating.substr(1, movies[i].imdbRating.length -2);
       parseFloat(movies[i].imdbRating);
-    }
-    if(movies.length != 0) {
+    } */
+
    //parseFloat(movies[i].imdbRating);
     //console.log(movies[i].imdbRating);
-    sum = sum + movies[i].imdbRating;
-    console.log(sum)
-    sum = sum / movies[i].length;
+    sum += Number(movies[i].imdbRating);
+    
+    avg = sum / movies.length;
     //console.log(sum)
-    }
-    else if (movies.length === 0) {
-      return 0;
-    }
+ 
+  
     
   }
-  return sum;
+
+  return avg;
 } 
 
 /**
@@ -151,23 +154,16 @@ for(i = 0; i < movies.length; i++) {
     };
  */
 function findById(movies, id) {
-
-nullcase = null;
-if(movies.length === 0) {
-  return nullcase;
-}
-  
-  for (i = 0 ; i < movies.length; i++) {
-    if(movies[i].imdbID.includes(id)) {
-      console.log(id);
-      console.log(movies[i].imdbID);
-      return movies[i];
-    }
-    else if (movies[i].imdbID !== id ) {
-      return nullcase;
-    }
+  let nullcase = null;
+  if(movies.length === 0) {
+    return nullcase;
   }
-
+for(i = 0; i < movies.length; i++) {
+  if(movies[i].imdbID === id) {
+    return movies[i]
+  }
+}
+return nullcase;
 }
 
 /**
@@ -195,12 +191,13 @@ function filterByGenre(movies, genre) {
   genreArr = [];
 
   for (let i = 0; i < movies.length; i++) {
-    if (movies[i].genre.includes(genre)) {
+    movies[i].genre.split(' ');
+    if (movies[i].genre.toLowerCase().includes(genre.toLowerCase())) {
       genreArr.push(movies[i])
     }
-    else if (movies[i].genre !== genre || movies.length === 0) {
+    /*else if (movies[i].genre !== genre || movies.length === 0) {
       return genreArr;
-    }
+    } */
   }
   return genreArr;
 }
@@ -227,7 +224,17 @@ function filterByGenre(movies, genre) {
       }
     ];
  */
-function getAllMoviesReleasedAtOrBeforeYear(movies, year) {}
+function getAllMoviesReleasedAtOrBeforeYear(movies, year) {
+  let releasedArr = [] 
+  for(let i = 0; i < movies.length; i++) {
+    let release = movies[i].released.split(' ')
+    let released = parseFloat(release[2])
+    if(released <= year) {
+      releasedArr.push(movies[i])
+    }
+  }
+  return releasedArr;
+}
 
 /**
  * getBiggestBoxOfficeMovie()
@@ -244,23 +251,22 @@ function getBiggestBoxOfficeMovie(movies) {
   if (movies.length === 0) {
     return null;
   }
+  title = "";
 biggestBoxOffice = 0;
 for (i = 0; i < movies.length; i++) {
-  //parseFloat(movies[i].boxOffice);
-  if (typeof movies[i].boxOffice === "string") {
-    parseFloat(movies[i].boxOffice);
-    console.log(movies[i].boxOffice); 
+let highTotal = parseFloat(movies[i].boxOffice.slice(1).split(',').join(''))
+if (biggestBoxOffice < highTotal) {
+  biggestBoxOffice = highTotal;
+  //console.log(movies[i].title);
+  title =  movies[i].title;
+}
   }
-  if (biggestBoxOffice < movies[i].boxOffice) {
-    biggestBoxOffice = movies[i];
-    console.log(movies[i].title);
-    return movies[i].title;
-  }
+  return title;
  
  
 }
 
-}
+
 
 // Do not change anything below this line.
 module.exports = {
